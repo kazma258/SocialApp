@@ -39,11 +39,24 @@ def get_data():
     return jsonify(data=None)
 
 @app.route('/api/register', methods=['POST'])
+def register():
+    try:
+        get_username = request.json.get('username')
+        get_account = request.json.get('account')
+        get_password = request.json.get('password')
+        get_email = request.json.get('email')
+        print(f'received: {get_username}, {get_account}, {get_password}, {get_email}')
+        success = sqlutils.register(get_username, get_account, get_password, get_email)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 def register(account, password, email, username):
     try:
         return(sqlutils.register(username, account, password, email))
     except Exception as e:
         print(f'Error: {e}')
+        return False
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

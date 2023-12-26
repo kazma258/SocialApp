@@ -20,12 +20,8 @@
         <input type="password" id="password" placeholder="請輸入密碼" />
       </div>
       <div>
-        <label for="confirmPassword">確認密碼:</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          placeholder="請再次輸入密碼"
-        />
+        <label for="username">使用者名稱</label>
+        <input type="text" id="username" placeholder="請輸入使用者" />
       </div>
       <div>
         <button @click="submitSignupForm">註冊</button>
@@ -71,8 +67,31 @@ export default {
     },
     submitSignupForm () {
       // 註冊表單送出
-      
-    },
+      axios
+        .post('http://localhost:5000/api/register', {
+          email: document.getElementById('email').value,
+          account: document.getElementById('account').value,
+          password: document.getElementById('password').value,
+          username: document.getElementById('username').value
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res => {
+          if (res.data.success) {
+            console.log(res.data)
+            alert('註冊成功')
+            this.showRegister = false
+          } else {
+            console.log(res.data)
+            alert('註冊失敗')
+          }
+        })
+        .catch(err => {
+          console.log('Error: ', err)
+        })
+    }
   }
 }
 </script>
