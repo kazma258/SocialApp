@@ -91,6 +91,36 @@ export default {
         .catch(err => {
           console.log('Error: ', err)
         })
+    },
+    submitSigninForm () {
+      // 登入表單送出
+      axios
+        .post('http://localhost:5000/api/login', {
+          account: document.getElementById('account').value,
+          password: document.getElementById('password').value
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(res => {
+          if (res.data.success) {
+            console.log(res.data)
+            alert('登入成功')
+
+            // 保存登入狀態
+            localStorage.setItem('token', res.data.token)
+            // Redirecting to the URL sent from the backend
+            this.$router.push('/Chat')
+            this.showLogin = false
+          } else {
+            console.log(res.data)
+            alert('登入失敗')
+          }
+        })
+        .catch(err => {
+          console.log('Error: ', err)
+        })
     }
   }
 }

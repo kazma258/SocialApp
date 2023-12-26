@@ -4,6 +4,7 @@ import HelloWorld from '@/components/HelloWorld'
 import Home from '@/views/Home'
 import About from '@/views/About'
 import Login from '@/views/Login'
+import Chat from '@/views/Chat'
 
 Vue.use(Router)
 
@@ -28,6 +29,11 @@ export default new Router({
       path: '/Login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/Chat',
+      name: 'Chat',
+      component: Chat
     }
     // Add more routes for other components if needed
   ]

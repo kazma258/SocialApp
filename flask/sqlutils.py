@@ -75,6 +75,9 @@ def generate_id(length):
     result_hash = int(result_hash, 16)
 
     return result_hash
+# 取得當前時間
+def get_current_time():
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
 
 # create a new user
 def create_user(account, password, email, username, connection: mysql.connector.connection.MySQLConnection):
@@ -101,7 +104,7 @@ def create_user(account, password, email, username, connection: mysql.connector.
             # 以rndid為主鍵，在userinfo中新增一筆資料
             cursor.execute(f"INSERT INTO userinfo \
                 (userId, signUpDate, nickname) VALUES \
-                ('{rndid}', '{time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())}', '{username}')") 
+                ('{rndid}', '{get_current_time()}', '{username}')") 
             print(f"Account {account} info created successfully")
             print(f'Info:\nAccount: {account} \nPassword: {password} \nEmail: {email} \nrndid: {rndid}')
             connection.commit()
@@ -122,6 +125,79 @@ def register(username, account, password, email) -> bool:
         except Exception as e:
             print(e)
             return False
+        
+# 登入功能，傳入參數為 account password
+def login(account, password):
+    # 創建連接
+    connection = create_connection()
+
+    if connection:
+        try:
+            # 獲取 cursor
+            cursor = connection.cursor()
+
+            # SQL 查詢，檢查是否已經註冊過
+            cursor.execute(f"SELECT * FROM logininfo WHERE account = '{account}'")
+            result = cursor.fetchone()
+
+            if result:
+                print(f"Account {account} found")
+                if result[2] == password:
+                    print(f"Account {account} login successfully")
+                    result = {'success':True, 'redirect':'http://localhost:8080/#/Chat', 'uid': result[0]}
+                    return result
+                else:
+                    print(f"Account {account} login failed")
+                    return False
+            elif result is None:
+                print(f"Account {account} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False
+
+def get_group(userid):
+    connection = create_connection()
+
+    if connection:
+        try:
+            # 獲取 cursor
+            cursor = connection.cursor()
+
+            # SQL 查詢，檢查是否已經註冊過
+            cursor.execute(f"SELECT * FROM logininfo WHERE account = '{userid}'")
+            result = cursor.fetchone()
+
+            if result:
+                print(f"Account {userid} found")
+                cursor.execute(f"SELECT * FROM groups WHERE adminId = '{result[0]}'")
+                result = cursor.fetchall()
+                print(result)
+                return result
+            elif result is None:
+                print(f"Account {userid} not found")
+                return False
+        except Exception as e:
+            print(e)
+            return False
+
+# def create_group(authid, group_name):
+#     connection = create_connection()
+
+#     if connection:
+#         try:
+#             # 獲取 cursor
+#             cursor = connection.cursor()
+
+#             # 創建群組
+#             rndid = generate_id(20)
+#             cursor.execute(f"INSERT INTO groups \
+#                 (adminId, gId, gName, gData) VALUES \
+#                 ('{uid}', '{rndid}', '{group_name}, '{get_current_time()}')")
+#         except Exception as e:
+#             print(e)
+#             return False
+
 
 if __name__ == '__main__':
     # table_info = get_alltable_info()
