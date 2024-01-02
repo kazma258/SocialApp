@@ -77,7 +77,7 @@ def generate_id(length):
     return result_hash
 # 取得當前時間
 def get_current_time():
-    return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    return time.strftime('%Y-%m-%d', time.localtime())
 
 # create a new user
 def create_user(account, password, email, username, connection: mysql.connector.connection.MySQLConnection):
@@ -161,46 +161,56 @@ def get_group(userid):
 
     if connection:
         try:
-            # 獲取 cursor
+            # 获取 cursor
             cursor = connection.cursor()
 
-            # SQL 查詢，檢查是否已經註冊過
-            cursor.execute(f"SELECT * FROM logininfo WHERE account = '{userid}'")
-            result = cursor.fetchone()
+            # 使用 JOIN 来合并两个表的查询
+            query = """
+            SELECT groupinfo.gId, groupinfo.gName
+            FROM logininfo
+            INNER JOIN groupinfo ON logininfo.userId = groupinfo.adminId
+            WHERE logininfo.userId = %s;
+            """
+            cursor.execute(query, (userid,))  # 使用参数化查询来防止 SQL 注入
+            result = cursor.fetchall()
+            print(f"SQL查詢 userid: {userid}")
 
             if result:
-                print(f"Account {userid} found")
-                cursor.execute(f"SELECT * FROM groups WHERE adminId = '{result[0]}'")
-                result = cursor.fetchall()
+                print(f"Groups for account {userid} found")
                 print(result)
                 return result
-            elif result is None:
-                print(f"Account {userid} not found")
+            else:
+                print(f"No groups found for account {userid}")
                 return False
         except Exception as e:
             print(e)
             return False
 
-# def create_group(authid, group_name):
-#     connection = create_connection()
 
-#     if connection:
-#         try:
-#             # 獲取 cursor
-#             cursor = connection.cursor()
+def create_group(uid, group_name):
+    connection = create_connection()
 
-#             # 創建群組
-#             rndid = generate_id(20)
-#             cursor.execute(f"INSERT INTO groups \
-#                 (adminId, gId, gName, gData) VALUES \
-#                 ('{uid}', '{rndid}', '{group_name}, '{get_current_time()}')")
-#         except Exception as e:
-#             print(e)
-#             return False
+    if connection:
+        try:
+            # 獲取 cursor
+            cursor = connection.cursor()
+
+            # 創建群組
+            rndid = generate_id(20)
+            query = "INSERT INTO groupinfo (adminId, gId, gName, gDate) \
+                    VALUES (%s, %s, %s, %s)"
+            values = (uid, rndid, group_name, get_current_time())
+            print(get_current_time())
+            cursor.execute(query, values)
+        except Exception as e:
+            print(e)
+            return False
 
 
 if __name__ == '__main__':
     # table_info = get_alltable_info()
     # print(table_info)
-    register('test', 'test', 'test', 'email@test.com')
+    # register('test', 'test', 'test', 'email@test.com')
     # print(generate_id(16))
+    get_group('1099594277410258460086287')
+    # create_group('1099594277410258460086287', 'ttest2')

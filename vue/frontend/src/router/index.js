@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
+import ChatGroup from '@/components/Chat'
 import Home from '@/views/Home'
 import About from '@/views/About'
 import Login from '@/views/Login'
@@ -34,6 +35,11 @@ export default new Router({
       path: '/Chat',
       name: 'Chat',
       component: Chat
+    },
+    {
+      path: '/Chat/:groupId',
+      name: 'ChatGroup',
+      component: ChatGroup
     }
     // Add more routes for other components if needed
   ]

@@ -7,9 +7,6 @@ from werkzeug.security import check_password_hash
 
 app = Flask(__name__)
 CORS(app)  # 解决跨域问题
-app.config['JWT_SECRET_KEY'] = '666'
-jwt = JWTManager(app)
-
 
 # 连接到 MySQL 数据库
 def create_connection():
@@ -71,22 +68,33 @@ def login():
         print(f'received: {get_account}, {get_password}')
         success = sqlutils.login(get_account, get_password)
         if success:
-            access_token = create_access_token(identity=success['uid'])
-            return jsonify({'success': success, 'token': access_token})
+            return jsonify({'success': success})
         return jsonify({'success': success})
     except Exception as e:
         return jsonify({'error': str(e)})
 
-@app.route('/api/group', methods=['POST', 'GET'])
+@app.route('/api/groups', methods=['POST'])
 def group():
-    if request.method == 'GET':
+    current_user = request.json.get('uid')
+    if request.method == 'POST':
         try:
-            get_account = request.args.get('account')
-            print(f'received: {get_account}')
-            success = sqlutils.get_group(get_account)
-            return jsonify({'success': success})
+            groupinfo = sqlutils.get_group(current_user)
+            return jsonify(groupinfo)
         except Exception as e:
-            return jsonify({'error': str(e)})
+            print(f'Error: {e}')
+
+        return jsonify(data=None)
+
+@app.route('/api/creategroup', methods=['POST'])
+def creategroup():
+    try:
+        get_groupname = request.json.get('groupname')
+        get_uid = request.json.get('uid')
+        print(f'received: {get_groupname}, {get_uid}')
+        success = sqlutils.create_group(get_uid, get_groupname)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

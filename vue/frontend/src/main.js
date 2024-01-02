@@ -23,6 +23,7 @@ axios.interceptors.request.use(
 
 // 將axios添加到Vue的原型中
 Vue.prototype.$axios = axios
+Vue.prototype.$http = axios
 
 /* eslint-disable no-new */
 new Vue({

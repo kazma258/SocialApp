@@ -105,11 +105,11 @@ export default {
         })
         .then(res => {
           if (res.data.success) {
-            console.log(res.data)
+            console.log(res.data.success)
             alert('登入成功')
 
             // 保存登入狀態
-            localStorage.setItem('token', res.data.token)
+            localStorage.setItem('uid', res.data.success.uid)
             // Redirecting to the URL sent from the backend
             this.$router.push('/Chat')
             this.showLogin = false
