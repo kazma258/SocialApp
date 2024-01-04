@@ -206,11 +206,37 @@ def create_group(uid, group_name):
             print(e)
             return False
 
+def create_channel(gid, channel_name):
+    connection = create_connection()
+
+    if connection:
+        try:
+            # 獲取 cursor
+            cursor = connection.cursor()
+
+            # 創建群組
+            rndid = generate_id(20)
+            query = "INSERT INTO channel (gId, chId, chname, createdate, isText) \
+                    VALUES (%s, %s, %s, %s, %s)"
+            values = (gid, rndid, channel_name, get_current_time(), 1)
+            print(get_current_time())
+            cursor.execute(query, values)
+
+            if cursor.rowcount > 0:
+                print("頻道已成功創建")
+                connection.commit()
+            else:
+                print("創建頻道失敗")
+        except Exception as e:
+            print(e)
+            return False
+
 
 if __name__ == '__main__':
     # table_info = get_alltable_info()
     # print(table_info)
     # register('test', 'test', 'test', 'email@test.com')
     # print(generate_id(16))
-    get_group('1099594277410258460086287')
+    # get_group('1099594277410258460086287')
     # create_group('1099594277410258460086287', 'ttest2')
+    create_channel('345223452347', 'testchannel')

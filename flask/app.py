@@ -95,6 +95,17 @@ def creategroup():
         return jsonify({'success': success})
     except Exception as e:
         return jsonify({'error': str(e)})
+    
+@app.route('/api/createchannel', methods=['POST'])
+def createchannel():
+    try:
+        get_channelname = request.json.get('channelname')
+        get_gid = request.json.get('gid')
+        print(f'received: {get_channelname}, {get_gid}')
+        success = sqlutils.create_channel(get_gid, get_channelname)
+        return jsonify({'success': success})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
